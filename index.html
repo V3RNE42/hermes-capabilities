@@ -3,6 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<style id="g">
+  html.off body{display:none}
+  #gate{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#0b0d10;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e6edf3}
+  #gate form{display:flex;flex-direction:column;gap:12px;width:min(320px,90vw)}
+  #gate h1{font-size:1.05rem;margin:0 0 4px;font-weight:650}
+  #gate p{margin:0;color:#93a1ad;font-size:.88rem}
+  #gate input{padding:11px 12px;background:#151a20;border:1px solid #232b35;border-radius:8px;color:#e6edf3;font-size:1rem}
+  #gate input:focus{outline:none;border-color:#79c0ff}
+  #gate button{padding:11px;background:#7ee787;border:0;border-radius:8px;color:#0b0d10;font-weight:700;font-size:.95rem;cursor:pointer}
+  #gate.err input{border-color:#ff7b72}
+</style>
+<script>
+  document.documentElement.classList.add('off');
+  const H = '43dedb188bf6cdb86bd478ec6047dfae07eaf1b9a360601b90aeab1f7665190c'; // sha256 de la contraseña
+  async function unlock(ev){
+    ev.preventDefault();
+    const v = document.getElementById('pw').value;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+    const hex = [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    if (hex !== H){ document.getElementById('gate').classList.add('err'); document.getElementById('pw').value=''; return; }
+    sessionStorage.hermesOk = '1';
+    document.documentElement.classList.remove('off');
+    document.getElementById('gate').remove();
+  }
+  addEventListener('DOMContentLoaded', ()=>{
+    const html = document.documentElement;
+    if (sessionStorage.hermesOk === '1'){ html.classList.remove('off'); document.getElementById('gate').remove(); return; }
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div id="gate"><form onsubmit="return unlock(event)"><h1>Acceso restringido</h1><p>Introduce la contraseña para ver el contenido.</p><input id="pw" type="password" autocomplete="current-password" required autofocus><button type="submit">Entrar</button></form></div>');
+    document.getElementById('pw').focus();
+  });
+</script>
+
 <title>Hermes Agent — Lo que hago y lo que puedo hacer</title>
 <meta name="description" content="Qué es Hermes Agent, qué ha hecho últimamente y qué capacidades tiene. Escrito para Jesús.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
@@ -16,6 +50,7 @@
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
+  html.off{overflow:hidden}
   body{
     margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
     line-height:1.65;font-size:16.5px;
