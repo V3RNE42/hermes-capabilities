@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <style id="g">
-  html.off body{display:none}
+  html.off body > :not(#gate){display:none}
   #gate{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#0b0d10;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e6edf3}
   #gate form{display:flex;flex-direction:column;gap:12px;width:min(320px,90vw)}
   #gate h1{font-size:1.05rem;margin:0 0 4px;font-weight:650}
